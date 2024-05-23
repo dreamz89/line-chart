@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppHeader />
-    <AppFooter />
+    <TheNavbar />
+    <TheFooter />
   </div>
 </template>
