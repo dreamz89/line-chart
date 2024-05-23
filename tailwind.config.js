@@ -12,6 +12,7 @@ export default {
     colors: {
       black: '#333A42',
       blue: '#195b9c',
+      'blue-500': '#17528C',
       green: '#24806E',
       white: '#fff',
       'gray-100': '#F3F5F6',
