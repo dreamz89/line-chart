@@ -1,6 +1,6 @@
 <template>
-  <div class="container py-12">
-    <div>
+  <div class="container py-12 grow">
+    <div class="mb-6">
       <h4 class="mb-5">Filters</h4>
       <div
         class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5"
@@ -41,13 +41,18 @@
         <AppButton
           type="primary"
           label="Submit"
-          :disabled="isButtonDisabled"
+          :disabled="!areFiltersFilled"
           @submit="generateFilteredData"
         />
       </div>
     </div>
-    <div>
-      <LineChart />
+    <div v-if="showResults">
+      <div v-if="false" class="flex justify-center text-red-400">
+        <p>Invalid filters combination</p>
+      </div>
+      <div v-else class="h-72">
+        <LineChart />
+      </div>
     </div>
   </div>
 </template>
@@ -68,8 +73,16 @@ export default {
         variable: "",
         unit: "",
       },
-      isButtonDisabled: false,
+      showResults: true,
     }
+  },
+  computed: {
+    areFiltersFilled() {
+      const selectedFiltersValues = Object.values(this.selectedFilters)
+      const areFiltersFilled = selectedFiltersValues.every((value) => value)
+
+      return areFiltersFilled
+    },
   },
   methods: {
     handleSelect(filter, selected) {
@@ -85,7 +98,10 @@ export default {
       }
     },
     generateFilteredData() {
-      console.log("generateFilteredData")
+      if (this.areFiltersFilled) {
+        this.showResults = true
+        console.log("generateFilteredData")
+      }
     },
   },
 }
