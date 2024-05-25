@@ -1,6 +1,6 @@
 <template>
   <footer class="bg-black py-8">
-    <div class="container flex gap-x-8">
+    <div class="container flex flex-col-reverse lg:flex-row gap-8">
       <div class="flex flex-col gap-y-2 text-white max-w-72">
         <p>
           International Institute for Applied Systems Analysis (IIASA) |

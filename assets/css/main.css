@@ -6,4 +6,24 @@
   .container {
     @apply mx-auto w-full max-w-screen-xl px-4 lg:px-8;
   }
+
+  .select-menu {
+    button {
+      @apply text-black focus:outline-black cursor-pointer border-gray-400;
+    }
+
+    li {
+      @apply text-black text-base cursor-pointer;
+
+      &[data-headlessui-state="active"] {
+        @apply bg-gray-100;
+      }
+    }
+  }
+}
+
+@layer utilities {
+  h4 {
+    @apply text-black text-xl font-bold lg:text-2xl;
+  }
 }
