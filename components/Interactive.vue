@@ -200,11 +200,11 @@ export default {
         return accumulator
       }, { Scenario: [], Region: [], Item: [], Variable: [], Unit: [] })
 
-      this.filterOptions.scenario = uniqueOptions.Scenario
-      this.filterOptions.region = uniqueOptions.Region
-      this.filterOptions.item = uniqueOptions.Item
-      this.filterOptions.variable = uniqueOptions.Variable
-      this.filterOptions.unit = uniqueOptions.Unit
+      this.filterOptions.scenario = uniqueOptions.Scenario.sort()
+      this.filterOptions.region = uniqueOptions.Region.sort()
+      this.filterOptions.item = uniqueOptions.Item.sort()
+      this.filterOptions.variable = uniqueOptions.Variable.sort()
+      this.filterOptions.unit = uniqueOptions.Unit.sort((a, b) => a.localeCompare(b))
     },
     async getChartData() {
       this.chartData = await this.getDataFromS3(`SELECT "Year", "Value" FROM s3object WHERE Scenario='${this.selectedValues.scenario}' AND Region='${this.selectedValues.region}' AND Item='${this.selectedValues.item}' AND Variable='${this.selectedValues.variable}' AND Unit='${this.selectedValues.unit}'`)
