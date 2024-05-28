@@ -1,5 +1,5 @@
 <template>
-  <Line :data="chartConfig" :options="options" />
+  <Line :data="chartConfig" :options="chartOptions" />
 </template>
 
 <script>
@@ -31,30 +31,25 @@ export default {
   },
   props: {
     data: Array,
+    unit: String,
   },
-  data() {
-    return {
-      chartConfig: {
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-        ],
+  computed: {
+    chartConfig() {
+      return {
+        labels: this.data.map((value) => value.Year),
         datasets: [
           {
             label: "Data",
             backgroundColor: "#24806E",
             borderColor: "#D1D6DC",
             borderWidth: 1,
-            data: [40, 39, 10, 40, 39, 80, 40],
+            data: this.data.map((value) => value.Value),
           },
         ],
-      },
-      options: {
+      }
+    },
+    chartOptions() {
+      return {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
@@ -76,7 +71,7 @@ export default {
             display: true,
             title: {
               display: true,
-              text: "Value",
+              text: this.unit,
               color: "#333A42",
               font: {
                 family: "sans-serif",
@@ -87,8 +82,8 @@ export default {
             },
           },
         },
-      },
-    }
+      }
+    },
   },
 }
 </script>

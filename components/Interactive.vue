@@ -47,11 +47,11 @@
       </div>
     </div>
     <div v-if="showResults">
-      <div v-if="false" class="flex justify-center text-red-400">
+      <div v-if="!chartData.length" class="flex justify-center text-red-400">
         <p>Invalid filters combination</p>
       </div>
       <div v-else class="h-72">
-        <LineChart />
+        <LineChart :data="chartData" :unit="selectedValues.unit" />
       </div>
     </div>
   </div>
@@ -78,7 +78,8 @@ export default {
         variable: "",
         unit: "",
       },
-      showResults: true,
+      showResults: false,
+      chartData: [],
     }
   },
   mounted() {
@@ -104,6 +105,8 @@ export default {
         variable: "",
         unit: "",
       }
+      this.showResults = false
+      this.chartData = []
     },
     generateFilteredData() {
       if (this.areFiltersFilled) {
@@ -203,8 +206,8 @@ export default {
       this.filterOptions.variable = uniqueOptions.Variable
       this.filterOptions.unit = uniqueOptions.Unit
     },
-    getChartData() {
-      console.log("getChartData")
+    async getChartData() {
+      this.chartData = await this.getDataFromS3(`SELECT "Year", "Value" FROM s3object WHERE Scenario='${this.selectedValues.scenario}' AND Region='${this.selectedValues.region}' AND Item='${this.selectedValues.item}' AND Variable='${this.selectedValues.variable}' AND Unit='${this.selectedValues.unit}'`)
     },
   },
 }
