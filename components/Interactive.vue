@@ -7,32 +7,32 @@
       >
         <AppSelect
           label="Scenario"
-          :options="optionsScenario"
-          :selectedFilter="selectedFilters.scenario"
+          :options="filterOptions.scenario"
+          :selectedValue="selectedValues.scenario"
           @on-select="handleSelect"
         />
         <AppSelect
           label="Region"
-          :options="optionsRegion"
-          :selectedFilter="selectedFilters.region"
+          :options="filterOptions.region"
+          :selectedValue="selectedValues.region"
           @on-select="handleSelect"
         />
         <AppSelect
           label="Item"
-          :options="optionsItem"
-          :selectedFilter="selectedFilters.item"
+          :options="filterOptions.item"
+          :selectedValue="selectedValues.item"
           @on-select="handleSelect"
         />
         <AppSelect
           label="Variable"
-          :options="optionsVariable"
-          :selectedFilter="selectedFilters.variable"
+          :options="filterOptions.variable"
+          :selectedValue="selectedValues.variable"
           @on-select="handleSelect"
         />
         <AppSelect
           label="Unit"
-          :options="optionsUnit"
-          :selectedFilter="selectedFilters.unit"
+          :options="filterOptions.unit"
+          :selectedValue="selectedValues.unit"
           @on-select="handleSelect"
         />
       </div>
@@ -61,12 +61,14 @@
 export default {
   data() {
     return {
-      optionsScenario: ["Wade Cooper", "Arlene Mccoy"],
-      optionsRegion: ["Wade Cooper", "Arlene Mccoy"],
-      optionsItem: ["Wade Cooper", "Arlene Mccoy"],
-      optionsVariable: ["Wade Cooper", "Arlene Mccoy"],
-      optionsUnit: ["Wade Cooper", "Arlene Mccoy"],
-      selectedFilters: {
+      filterOptions: {
+        scenario: [],
+        region: [],
+        item: [],
+        variable: [],
+        unit: [],
+      },
+      selectedValues: {
         scenario: "",
         region: "",
         item: "",
@@ -78,18 +80,18 @@ export default {
   },
   computed: {
     areFiltersFilled() {
-      const selectedFiltersValues = Object.values(this.selectedFilters)
-      const areFiltersFilled = selectedFiltersValues.every((value) => value)
+      const allValues = Object.values(this.selectedValues)
+      const areFiltersFilled = allValues.every((value) => value)
 
       return areFiltersFilled
     },
   },
   methods: {
     handleSelect(filter, selected) {
-      this.selectedFilters[filter] = selected
+      this.selectedValues[filter] = selected
     },
     resetFilters() {
-      this.selectedFilters = {
+      this.selectedValues = {
         scenario: "",
         region: "",
         item: "",

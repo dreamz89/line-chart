@@ -17,7 +17,7 @@ export default {
   props: {
     label: String,
     options: Array,
-    selectedFilter: String,
+    selectedValue: String,
   },
   data() {
     return {
@@ -25,9 +25,9 @@ export default {
     }
   },
   watch: {
-    selectedFilter() {
-      if (this.selectedFilter !== this.selected) {
-        this.selected = this.selectedFilter
+    selectedValue() {
+      if (this.selectedValue !== this.selected) {
+        this.selected = this.selectedValue
       }
     },
     selected() {
