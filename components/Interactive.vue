@@ -58,6 +58,9 @@
 </template>
 
 <script>
+import { S3Client, SelectObjectContentCommand } from "@aws-sdk/client-s3"
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
+
 export default {
   data() {
     return {
@@ -77,6 +80,9 @@ export default {
       },
       showResults: true,
     }
+  },
+  mounted() {
+    this.getFilterOptions()
   },
   computed: {
     areFiltersFilled() {
@@ -102,8 +108,103 @@ export default {
     generateFilteredData() {
       if (this.areFiltersFilled) {
         this.showResults = true
-        console.log("generateFilteredData")
+        this.getChartData()
       }
+    },
+    concatArrayBuffers(chunks) {
+      const result = new Uint8Array(chunks.reduce((a, c) => a + c.length, 0))
+      let offset = 0
+      for (const chunk of chunks) {
+        result.set(chunk, offset)
+        offset += chunk.length
+      }
+      return result
+    },
+    async convertStreamToJSON(stream) {
+      // https://stackoverflow.com/questions/40385133/retrieve-data-from-a-readablestream-object
+      // Convert a stream to a Uint8Array
+      let chunks = []
+      for await (const item of stream) {
+        if (typeof item.Records !== "undefined") {
+          chunks.push(item.Records.Payload)
+        }
+      }
+      const Uint8array = this.concatArrayBuffers(chunks)
+
+      // Convert Uint8Array to string
+      const utf8decoder = new TextDecoder()
+      const bufferString = utf8decoder.decode(Uint8array)
+
+      // Convert string to json
+      const JsonString = "[" + bufferString.replace(/.$/, "") + "]"
+
+      return JSON.parse(JsonString)
+    },
+    async getDataFromS3(expression) {
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/command/SelectObjectContentCommand/
+      const client = new S3Client({
+        region: "eu-central-1",
+        credentials: fromCognitoIdentityPool({
+          clientConfig: { region: "eu-central-1" },
+          identityPoolId: "eu-central-1:058e086f-f2ea-45e6-b0c7-5fa102578121",
+        }),
+      })
+
+      const input = {
+        Bucket: "testwithslowapi",
+        Key: "sample1.csv",
+        Expression: expression,
+        ExpressionType: "SQL",
+        InputSerialization: {
+          CSV: {
+            FileHeaderInfo: "USE",
+            FieldDelimiter: ",",
+            RecordDelimiter: "\n",
+          },
+          CompressionType: "NONE",
+        },
+        OutputSerialization: {
+          JSON: {
+            RecordDelimiter: ",",
+          },
+        },
+      }
+
+      const command = new SelectObjectContentCommand(input)
+      const response = await client.send(command)
+      const data = await this.convertStreamToJSON(response.Payload)
+
+      return data
+    },
+    async getFilterOptions() {
+      const scenarioArray = await this.getDataFromS3('SELECT "Scenario", "Region", "Item", "Variable", "Unit" FROM s3object')
+      const uniqueOptions = scenarioArray.reduce((accumulator, value) => {
+        if (!accumulator['Scenario'].includes(value['Scenario'])) {
+          accumulator['Scenario'].push(value['Scenario'])
+        }
+        if (!accumulator['Region'].includes(value['Region'])) {
+          accumulator['Region'].push(value['Region'])
+        }
+        if (!accumulator['Item'].includes(value['Item'])) {
+          accumulator['Item'].push(value['Item'])
+        }
+        if (!accumulator['Variable'].includes(value['Variable'])) {
+          accumulator['Variable'].push(value['Variable'])
+        }
+        if (!accumulator['Unit'].includes(value['Unit'])) {
+          accumulator['Unit'].push(value['Unit'])
+        }
+        return accumulator
+      }, { Scenario: [], Region: [], Item: [], Variable: [], Unit: [] })
+
+      this.filterOptions.scenario = uniqueOptions.Scenario
+      this.filterOptions.region = uniqueOptions.Region
+      this.filterOptions.item = uniqueOptions.Item
+      this.filterOptions.variable = uniqueOptions.Variable
+      this.filterOptions.unit = uniqueOptions.Unit
+    },
+    getChartData() {
+      console.log("getChartData")
     },
   },
 }
