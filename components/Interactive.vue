@@ -1,5 +1,5 @@
 <template>
-  <div class="container py-12 grow relative">
+  <div class="container py-12 grow">
     <div
       v-if="isDropdownLoading"
       class="bg-black absolute top-0 left-0 h-full w-full opacity-50 z-10 flex items-center justify-center"
