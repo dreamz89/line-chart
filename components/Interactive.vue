@@ -1,5 +1,13 @@
 <template>
-  <div class="container py-12 grow">
+  <div class="container py-12 grow relative">
+    <div
+      v-if="isDropdownLoading"
+      class="bg-black absolute top-0 left-0 h-full w-full opacity-50 z-10 flex items-center justify-center"
+    >
+      <div
+        class="animate-spin h-14 w-14 rounded-full border-white border-t-gray-800 border-4"
+      ></div>
+    </div>
     <div class="mb-6">
       <h4 class="mb-5">Filters</h4>
       <div
@@ -81,6 +89,7 @@ export default {
       },
       showResults: false,
       chartData: [],
+      isDropdownLoading: true,
       isChartLoading: false,
     }
   },
@@ -206,7 +215,7 @@ export default {
       this.filterOptions.region = uniqueOptions.Region.sort()
       this.filterOptions.item = uniqueOptions.Item.sort()
       this.filterOptions.variable = uniqueOptions.Variable.sort()
-      this.filterOptions.unit = uniqueOptions.Unit.sort((a, b) => a.localeCompare(b))
+      this.isDropdownLoading = false
     },
     async getChartData() {
       this.isChartLoading = true
