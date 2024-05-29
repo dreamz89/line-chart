@@ -200,36 +200,47 @@ export default {
       return data
     },
     async getFilterOptions() {
-      const scenarioArray = await this.getDataFromS3('SELECT "Scenario", "Region", "Item", "Variable", "Unit" FROM s3object')
-      const uniqueOptions = scenarioArray.reduce((accumulator, value) => {
-        if (!accumulator['Scenario'].includes(value['Scenario'])) {
-          accumulator['Scenario'].push(value['Scenario'])
-        }
-        if (!accumulator['Region'].includes(value['Region'])) {
-          accumulator['Region'].push(value['Region'])
-        }
-        if (!accumulator['Item'].includes(value['Item'])) {
-          accumulator['Item'].push(value['Item'])
-        }
-        if (!accumulator['Variable'].includes(value['Variable'])) {
-          accumulator['Variable'].push(value['Variable'])
-        }
-        if (!accumulator['Unit'].includes(value['Unit'])) {
-          accumulator['Unit'].push(value['Unit'])
-        }
-        return accumulator
-      }, { Scenario: [], Region: [], Item: [], Variable: [], Unit: [] })
+      const scenarioArray = await this.getDataFromS3(
+        'SELECT "Scenario", "Region", "Item", "Variable", "Unit" FROM s3object'
+      )
+      const uniqueOptions = scenarioArray.reduce(
+        (accumulator, value) => {
+          if (!accumulator["Scenario"].includes(value["Scenario"])) {
+            accumulator["Scenario"].push(value["Scenario"])
+          }
+          if (!accumulator["Region"].includes(value["Region"])) {
+            accumulator["Region"].push(value["Region"])
+          }
+          if (!accumulator["Item"].includes(value["Item"])) {
+            accumulator["Item"].push(value["Item"])
+          }
+          if (!accumulator["Variable"].includes(value["Variable"])) {
+            accumulator["Variable"].push(value["Variable"])
+          }
+          if (!accumulator["Unit"].includes(value["Unit"])) {
+            accumulator["Unit"].push(value["Unit"])
+          }
+          return accumulator
+        },
+        { Scenario: [], Region: [], Item: [], Variable: [], Unit: [] }
+      )
 
       this.filterOptions.scenario = uniqueOptions.Scenario.sort()
       this.filterOptions.region = uniqueOptions.Region.sort()
       this.filterOptions.item = uniqueOptions.Item.sort()
       this.filterOptions.variable = uniqueOptions.Variable.sort()
+      this.filterOptions.unit = uniqueOptions.Unit.sort((a, b) =>
+        a.localeCompare(b)
+      )
+
       this.isDropdownLoading = false
     },
     async getChartData() {
       this.isChartLoading = true
 
-      this.chartData = await this.getDataFromS3(`SELECT "Year", "Value" FROM s3object WHERE Scenario='${this.selectedValues.scenario}' AND Region='${this.selectedValues.region}' AND Item='${this.selectedValues.item}' AND Variable='${this.selectedValues.variable}' AND Unit='${this.selectedValues.unit}'`)
+      this.chartData = await this.getDataFromS3(
+        `SELECT "Year", "Value" FROM s3object WHERE Scenario='${this.selectedValues.scenario}' AND Region='${this.selectedValues.region}' AND Item='${this.selectedValues.item}' AND Variable='${this.selectedValues.variable}' AND Unit='${this.selectedValues.unit}'`
+      )
 
       this.isChartLoading = false
     },
