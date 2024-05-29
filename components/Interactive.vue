@@ -104,6 +104,15 @@ export default {
       return areFiltersFilled
     },
   },
+  watch: {
+    selectedValues: {
+      handler() {
+        this.showResults = false
+        this.chartData = []
+      },
+      deep: true,
+    },
+  },
   methods: {
     handleSelect(filter, selected) {
       this.selectedValues[filter] = selected
