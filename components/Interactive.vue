@@ -41,12 +41,13 @@
         <AppButton
           type="primary"
           label="Submit"
+          :loading="isChartLoading"
           :disabled="!areFiltersFilled"
           @submit="generateFilteredData"
         />
       </div>
     </div>
-    <div v-if="showResults">
+    <div v-if="showResults && !isChartLoading">
       <div v-if="!chartData.length" class="flex justify-center text-red-400">
         <p>Invalid filters combination</p>
       </div>
@@ -80,6 +81,7 @@ export default {
       },
       showResults: false,
       chartData: [],
+      isChartLoading: false,
     }
   },
   mounted() {
@@ -207,7 +209,11 @@ export default {
       this.filterOptions.unit = uniqueOptions.Unit.sort((a, b) => a.localeCompare(b))
     },
     async getChartData() {
+      this.isChartLoading = true
+
       this.chartData = await this.getDataFromS3(`SELECT "Year", "Value" FROM s3object WHERE Scenario='${this.selectedValues.scenario}' AND Region='${this.selectedValues.region}' AND Item='${this.selectedValues.item}' AND Variable='${this.selectedValues.variable}' AND Unit='${this.selectedValues.unit}'`)
+
+      this.isChartLoading = false
     },
   },
 }
